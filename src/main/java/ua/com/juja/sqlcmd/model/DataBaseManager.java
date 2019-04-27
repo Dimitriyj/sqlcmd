@@ -4,6 +4,8 @@ public interface DataBaseManager {
 
     String[] getTableNames();
 
+    String[] getTableColumns(String tableName);
+
     DataSet[] getTableData(String tableName);
 
     void connect(String database, String userName, String password);

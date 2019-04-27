@@ -50,19 +50,51 @@ public class JDBCDataBaseManager implements DataBaseManager {
         return getCommonSize(sql);
     }
 
+    private int getCountColumn(String tableName) {
+        String sql = "SELECT COUNT(*) FROM information_schema.columns "
+                + "WHERE table_schema= 'public' "
+                 + "AND table_name = '" + tableName + "'"
+                ;
+        return getCommonSize(sql);
+    }
+
     @Override
     public String[] getTableNames() {
         try {
             Statement stmt = connection.createStatement();
-            String sql = "SELECT table_name FROM information_schema.tables " +
-                        "WHERE table_schema='public' " +
-                        "AND table_type='BASE TABLE' " +
-                        "ORDER BY table_name";
+            String sql = "SELECT table_name FROM information_schema.tables "
+                        + "WHERE table_schema = 'public' "
+                        + "AND table_type = 'BASE TABLE' "
+                        + "ORDER BY table_name"
+                        ;
             ResultSet rs = stmt.executeQuery(sql);
             String[] tables = new String[getCountTables()];
             int index = 0;
             while (rs.next()) {
                 tables[index++] = rs.getString("table_name");
+            }
+            rs.close();
+            stmt.close();
+            return tables;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new String[0];
+        }
+    }
+
+    @Override
+    public String[] getTableColumns(String tableName) {
+        try {
+            Statement stmt = connection.createStatement();
+            String sql = "SELECT * FROM information_schema.columns "
+                    + "WHERE table_schema= 'public' "
+                    + "AND table_name = '" + tableName + "'"
+                    ;
+            ResultSet rs = stmt.executeQuery(sql);
+            String[] tables = new String[getCountColumn(tableName)];
+            int index = 0;
+            while (rs.next()) {
+                tables[index++] = rs.getString("column_name");
             }
             rs.close();
             stmt.close();

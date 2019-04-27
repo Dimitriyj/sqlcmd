@@ -13,6 +13,11 @@ public class InMemoryDataBaseManager implements DataBaseManager {
     }
 
     @Override
+    public String[] getTableColumns(String tableName) {
+        return new String[] {"name", "password", "id"};
+    }
+
+    @Override
     public DataSet[] getTableData(String tableName) {
         validateTable(tableName);
         return Arrays.copyOf(data, freeIndex);

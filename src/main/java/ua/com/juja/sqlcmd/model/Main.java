@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 public class Main {
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+    public static void main(String[] args) {
         String database = "sqlcmd";
         String user = "postgres";
         String password = "master";
