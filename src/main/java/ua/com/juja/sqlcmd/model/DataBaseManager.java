@@ -15,4 +15,6 @@ public interface DataBaseManager {
     void create(String tableName, DataSet input);
 
     void update(String tableName, int id, DataSet dataSet);
+
+    boolean isConnected();
 }

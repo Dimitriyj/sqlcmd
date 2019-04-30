@@ -64,10 +64,10 @@ public class Find implements Command {
     }
 
     private void printError(Exception e) {
-        String message = /*e.getClass().getSimpleName() + ": " +*/ e.getMessage();
+        String message = e.getMessage();
         Throwable cause = e.getCause();
         if (cause != null) {
-            message += " " + /*cause.getClass().getSimpleName() + ": " +*/ cause.getMessage();
+            message += " " + cause.getMessage();
         }
         view.write("failure due to reason: " + message);
         view.write("Try again");

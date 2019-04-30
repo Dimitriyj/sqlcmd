@@ -193,4 +193,9 @@ public class JDBCDataBaseManager implements DataBaseManager {
         }
     }
 
+    @Override
+    public boolean isConnected() {
+        return connection != null;
+    }
+
 }

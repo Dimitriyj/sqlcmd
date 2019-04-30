@@ -18,16 +18,20 @@ public class Help implements Command {
     @Override
     public void process(String command) {
         view.write("Existing commands:");
+
+        view.write("\tconnect|databaseName|userName|password");
+        view.write("\t\tfor connect to the database with which we will work");
+
         view.write("\tlist");
         view.write("\t\tfor a list of all the tables in the database to which you are connected");
 
         view.write("\tfind|tableName");
-        view.write("\t\tto get the table contents 'tableName'");
+        view.write("\t\tfor get the table contents 'tableName'");
 
         view.write("\thelp");
-        view.write("\t\tto display this list");
+        view.write("\t\tfor display this list");
 
         view.write("\texit");
-        view.write("\t\tto exit the program");
+        view.write("\t\tfor exit the program");
     }
 }
