@@ -3,7 +3,6 @@ package ua.com.juja.sqlcmd.controller;
 import ua.com.juja.sqlcmd.model.DataBaseManager;
 import ua.com.juja.sqlcmd.model.DataSet;
 import ua.com.juja.sqlcmd.view.View;
-
 import java.util.Arrays;
 
 public class MainController {
@@ -20,7 +19,7 @@ public class MainController {
         connectToDb();
 
         while (true) {
-            view.write("Введи команду (или help для помощи):");
+            view.write("Enter the command (or help for reference):");
             String command = view.read();
             if (command.equals("list")) {
                 doList();
@@ -29,29 +28,69 @@ public class MainController {
             } else if (command.equals("help")) {
                 doHelp();
             } else if (command.equals("exit")) {
-                view.write("Сеанс завершен");
+                view.write("Session completed");
                 System.exit(0);
             } else {
-                view.write("Несуществующая команда: " + command);
+                view.write("Invalid command: " + command);
             }
         }
     }
 
+    private void connectToDb() {
+        view.write("Welcome!");
+        view.write("Please enter username, database name and password in the format: database|username|password");
+        while (true) {
+            try {
+                String string = view.read();
+                String[] data = string.split("[|]");
+                if (data.length != 3) {
+                    throw new IllegalArgumentException("Invalid number of parameters separated by sign '|', expected 3, in stock: " + data.length);
+                }
+                String databaseName = data[0];
+                String userName = data[1];
+                String password = data[2];
+
+                manager.connect(databaseName, userName, password);
+                break;
+            } catch (Exception e) {
+                printError(e);
+            }
+        }
+        view.write("Connection successful!");
+    }
+
+    private void doList() {
+        String[] tableNames = manager.getTableNames();
+        String message = Arrays.toString(tableNames);
+        view.write(message);
+    }
+
     private void doFind(String command) {
-        String[] data = command.split("\\|");
-        if (data.length != 2) {
-            // exception
-        }
-        String tableName = data[1];
+        try {
+            String[] data = command.split("\\|");
+            if (data.length != 2) {
+                throw new IllegalArgumentException("Invalid number of parameters separated by sign '|', expected 2, in stock: " + data.length);
+            }
+            String tableName = data[1];
 
-        String[] tableColumns = manager.getTableColumns(tableName);
-        printHeader(tableColumns);
+            String[] tableColumns = manager.getTableColumns(tableName);
+            printHeader(tableColumns);
 
-        DataSet[] tableData = manager.getTableData(tableName);
-        if (tableData.length == 0) {
-            // exception
+            DataSet[] tableData = manager.getTableData(tableName);
+            printTable(tableData);
+        } catch (Exception e) {
+            printError(e);
         }
-        printTable(tableData);
+    }
+
+    private void printHeader(String[] tableColumns) {
+        String result = "|";
+        for (String name : tableColumns) {
+            result += name + "|";
+        }
+        view.write("------------");
+        view.write(result);
+        view.write("------------");
     }
 
     private void printTable(DataSet[] tableData) {
@@ -69,58 +108,19 @@ public class MainController {
         view.write(result);
     }
 
-    private void printHeader(String[] tableColumns) {
-        String result = "|";
-        for (String name : tableColumns) {
-            result += name + "|";
-        }
-        view.write("------------");
-        view.write(result);
-        view.write("------------");
-    }
-
     private void doHelp() {
-        view.write("Существующие команды:");
+        view.write("Existing commands:");
         view.write("\tlist");
-        view.write("\t\tдля получения списка всех таблиц базы, к которой подключились");
+        view.write("\t\tfor a list of all the tables in the database to which you are connected");
 
         view.write("\tfind|tableName");
-        view.write("\t\tдля получения содержимого таблицы 'tableName'");
+        view.write("\t\tto get the table contents 'tableName'");
 
         view.write("\thelp");
-        view.write("\t\tдля вывода этого списка на экран");
+        view.write("\t\tto display this list");
 
         view.write("\texit");
-        view.write("\t\tдля выхода из программы");
-    }
-
-    private void doList() {
-        String[] tableNames = manager.getTableNames();
-        String message = Arrays.toString(tableNames);
-        view.write(message);
-    }
-
-    private void connectToDb() {
-        view.write("Привет юзер!");
-        view.write("Введи пожалуйста имя пользователя, имя базы данных и пароль в формате: database|username|password");
-        while (true) {
-            try {
-                String string = view.read();
-                String[] data = string.split("[|]");
-                if (data.length != 3) {
-                    throw new IllegalArgumentException("Неверное количество параметров, разделенных знаком '|', ожидается 3, но есть: " + data.length);
-                }
-                String databaseName = data[0];
-                String userName = data[1];
-                String password = data[2];
-
-                manager.connect(databaseName, userName, password);
-                break;
-            } catch (Exception e) {
-                printError(e);
-            }
-        }
-        view.write("Успех!");
+        view.write("\t\tto exit the program");
     }
 
     private void printError(Exception e) {
@@ -129,7 +129,7 @@ public class MainController {
         if (cause != null) {
             message += " " + /*cause.getClass().getSimpleName() + ": " +*/ cause.getMessage();
         }
-        view.write("Неудача по причине: " + message);
-        view.write("Повторите попытку");
+        view.write("failure due to reason: " + message);
+        view.write("Try again");
     }
 }

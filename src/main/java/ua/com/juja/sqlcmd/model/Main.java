@@ -13,6 +13,14 @@ public class Main {
         DataBaseManager manager = new JDBCDataBaseManager();
         manager.connect(database, user, password);
 
+        // LIST TABLES
+        String[] tables = manager.getTableNames();
+        System.out.println(Arrays.toString(tables));
+
+        // LIST COLUMNS OF TABLES
+        String[] columnNames = manager.getTableColumns("users");
+        System.out.println(Arrays.toString(columnNames));
+
         // DELETE
         manager.clear("users");
 
@@ -22,10 +30,6 @@ public class Main {
         input.put("password", "123");
         input.put("id", 1);
         manager.create("users", input);
-
-        // LIST TABLES
-        String[] tables = manager.getTableNames();
-        System.out.println(Arrays.toString(tables));
 
         // SELECT
         String tableName = "users";

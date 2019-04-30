@@ -2,14 +2,13 @@ package ua.com.juja.sqlcmd.model;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import java.util.Arrays;
-
 import static org.junit.Assert.assertEquals;
 
 public abstract class DataBaseManagerTest {
 
     private DataBaseManager manager;
+
     public abstract DataBaseManager getDataBaseManager();
 
     @Before
@@ -22,6 +21,15 @@ public abstract class DataBaseManagerTest {
     public void testGetAllTableNames() {
         String[] tableNames = manager.getTableNames();
         assertEquals("[test, users]", Arrays.toString(tableNames));
+    }
+
+    @Test
+    public void testGetTableColumns() {
+        // given
+        manager.clear("users");
+        // when
+        String[] columnNames = manager.getTableColumns("users");
+        assertEquals("[name, password, id]", Arrays.toString(columnNames));
     }
 
     @Test
@@ -67,4 +75,5 @@ public abstract class DataBaseManagerTest {
         assertEquals("[name, password, id]", Arrays.toString(user.getNames()));
         assertEquals("[Gerbert, 12345, 1]", Arrays.toString(user.getValues()));
     }
+
 }
