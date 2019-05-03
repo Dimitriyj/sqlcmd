@@ -18,6 +18,6 @@ public class Exit implements Command {
     @Override
     public void process(String command) {
         view.write("Session completed!");
-        System.exit(0);
+        throw new ExitExcept();
     }
 }

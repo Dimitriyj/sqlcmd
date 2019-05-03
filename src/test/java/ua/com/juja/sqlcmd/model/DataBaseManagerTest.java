@@ -1,5 +1,6 @@
 package ua.com.juja.sqlcmd.model;
 
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.Arrays;
@@ -74,6 +75,11 @@ public abstract class DataBaseManagerTest {
         DataSet user = users[0];
         assertEquals("[name, password, id]", Arrays.toString(user.getNames()));
         assertEquals("[Gerbert, 12345, 1]", Arrays.toString(user.getValues()));
+    }
+
+    @Test
+    public void testIsConnected() {
+        TestCase.assertTrue(manager.isConnected());
     }
 
 }

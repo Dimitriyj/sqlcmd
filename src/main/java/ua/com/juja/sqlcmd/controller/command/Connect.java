@@ -5,6 +5,7 @@ import ua.com.juja.sqlcmd.view.View;
 
 public class Connect implements Command {
 
+    private static String COMMAND_SAMPLE = "connect|sqlcmd|postgres|master";
     private final DataBaseManager manager;
     private final View view;
 
@@ -23,8 +24,9 @@ public class Connect implements Command {
 
         try {
             String[] data = command.split("\\|");
-            if (data.length != 4) {
-                throw new IllegalArgumentException("Invalid number of parameters separated by sign '|', expected 4, in stock: " + data.length);
+            if (data.length != count()) {
+                throw new IllegalArgumentException(String.format("Invalid number of parameters separated by sign '|', " +
+                        "expected %s, in stock: %s", count(), data.length));
             }
             String databaseName = data[1];
             String userName = data[2];
@@ -35,6 +37,10 @@ public class Connect implements Command {
         } catch (Exception e) {
             printError(e);
         }
+    }
+
+    private int count() {
+        return COMMAND_SAMPLE.split("\\|").length;
     }
 
     private void printError(Exception e) {

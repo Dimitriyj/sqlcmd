@@ -24,11 +24,22 @@ public class MainController {
 
     public void run() {
 
+        try {
+            doWork();
+        } catch (ExitExcept e) {
+            // do nothing
+        }
+    }
+
+    private void doWork() {
         view.write("Welcome!");
         view.write("Please enter username, database name and password in the format: connect|database|username|password");
 
         while (true) {
             String input = view.read();
+            if (input == null) {
+                new Exit(view).process(input);
+            }
             for (Command command : commands) {
                 if (command.canProcess(input)) {
                     command.process(input);
