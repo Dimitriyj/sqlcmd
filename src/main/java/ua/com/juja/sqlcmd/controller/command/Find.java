@@ -24,7 +24,8 @@ public class Find implements Command {
         try {
             String[] data = command.split("\\|");
             if (data.length != 2) {
-                throw new IllegalArgumentException("Invalid number of parameters separated by sign '|', expected 2, in stock: " + data.length);
+                throw new IllegalArgumentException("Invalid number of parameters separated by sign '|', " +
+                        "expected 2, in stock: " + data.length);
             }
             String tableName = data[1];
 
@@ -33,8 +34,10 @@ public class Find implements Command {
 
             DataSet[] tableData = manager.getTableData(tableName);
             printTable(tableData);
+
+            view.write("------------");
         } catch (Exception e) {
-            printError(e);
+            view.write("failure due to reason: " + e.getMessage());
         }
     }
 
@@ -61,15 +64,5 @@ public class Find implements Command {
             result += value + "|";
         }
         view.write(result);
-    }
-
-    private void printError(Exception e) {
-        String message = e.getMessage();
-        Throwable cause = e.getCause();
-        if (cause != null) {
-            message += " " + cause.getMessage();
-        }
-        view.write("failure due to reason: " + message);
-        view.write("Try again");
     }
 }

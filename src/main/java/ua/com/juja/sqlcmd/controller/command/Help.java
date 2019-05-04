@@ -25,6 +25,12 @@ public class Help implements Command {
         view.write("\tlist");
         view.write("\t\tfor a list of all the tables in the database to which you are connected");
 
+        view.write("\tclear|tableName"); // TODO получить дополнительное подтверждение
+        view.write("\t\tfor clean the table named 'tableName'");
+
+        view.write("\tcreate|tableName|column1|value1|...|columnN|valueN");
+        view.write("\t\tfor create a row in a table named 'tableName'");
+
         view.write("\tfind|tableName");
         view.write("\t\tfor get the table contents 'tableName'");
 
