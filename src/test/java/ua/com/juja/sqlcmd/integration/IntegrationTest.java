@@ -185,32 +185,6 @@ public class IntegrationTest {
                 "Session completed!\r\n", getData());
     }
 
-//    @Test
-//    public void testFindAfterConnect() {
-//        // given
-//        in.add("connect|sqlcmd|postgres|master");
-//        in.add("find|users");
-//        in.add("exit");
-//
-//        // when
-//        Main.main(new String[0]);
-//
-//        // then
-//        assertEquals("Welcome (привет) !\r\n" +
-//                "Please enter username, database name and password in the format: connect|database|username|password\r\n" +
-//                // connect
-//                "Connection successful!\r\n" +
-//                "Enter the command (or help for reference):\r\n" +
-//                // find|users
-//                "------------\r\n" +
-//                "|name|password|id|\r\n" +
-//                "------------\r\n" +
-//                "------------\r\n" +
-//                "Enter the command (or help for reference):\r\n" +
-//                // exit
-//                "Session completed!\r\n", getData());
-//    }
-
     @Test
     public void testFindAfterConnectWithData() {
         // given
@@ -252,6 +226,30 @@ public class IntegrationTest {
     }
 
     @Test
+    public void testClearWithError() {
+        // given
+        in.add("connect|sqlcmd|postgres|master");
+        in.add("clear|abrakadabra|tadam");
+        in.add("exit");
+
+        // when
+        Main.main(new String[0]);
+
+        // then
+        assertEquals("Welcome (привет) !\r\n" +
+                "Please enter username, database name and password in the format: connect|database|username|password\r\n" +
+                // connect
+                "Connection successful!\r\n" +
+                "Enter the command (or help for reference):\r\n" +
+                // clear|abrakadabra|tadam
+                "failure due to reason: Invalid number of parameters separated by sign '|', expected 2, in stock: 3\r\n" +
+                "Try again\r\n" +
+                "Enter the command (or help for reference):\r\n" +
+                // exit
+                "Session completed!\r\n", getData());
+    }
+
+    @Test
     public void testConnectAfterConnect() {
         // given
         in.add("connect|sqlcmd|postgres|master");
@@ -286,7 +284,6 @@ public class IntegrationTest {
     public void testConnectWithError() {
         // given
         in.add("connect|sqlcmd");
-
         in.add("exit");
 
         // when
@@ -297,6 +294,30 @@ public class IntegrationTest {
                 "Please enter username, database name and password in the format: connect|database|username|password\r\n" +
                 // connect|sqlcmd
                 "failure due to reason: Invalid number of parameters separated by sign '|', expected 4, in stock: 2\r\n" +
+                "Try again\r\n" +
+                "Enter the command (or help for reference):\r\n" +
+                // exit
+                "Session completed!\r\n", getData());
+    }
+
+    @Test
+    public void testCreateWithErrors() {
+        // given
+        in.add("connect|sqlcmd|postgres|master");
+        in.add("create|users|abrakadabra");
+        in.add("exit");
+
+        // when
+        Main.main(new String[0]);
+
+        // then
+        assertEquals("Welcome (привет) !\r\n" +
+                "Please enter username, database name and password in the format: connect|database|username|password\r\n" +
+                // connect
+                "Connection successful!\r\n" +
+                "Enter the command (or help for reference):\r\n" +
+                // create|users
+                "failure due to reason: There must be an even number of parameters in format 'create|tableName|column1|value1|...|columnN|valueN', instead there is 'create|users|abrakadabra'\r\n" +
                 "Try again\r\n" +
                 "Enter the command (or help for reference):\r\n" +
                 // exit

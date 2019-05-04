@@ -23,8 +23,8 @@ public class Create implements Command {
     public void process(String command) {
         String[] data = command.split("\\|");
         if (data.length % 2 != 0) {
-            throw new IllegalArgumentException("There must be an even number of parameters in format " +
-                    "create|tableName|column1|value1|...|columnN|valueN, instead there is: " + data.length);
+            throw new IllegalArgumentException(String.format("There must be an even number of parameters in format " +
+                    "'create|tableName|column1|value1|...|columnN|valueN', instead there is '%s'", command));
         }
         String tableName = data[1];
         int countColums = data.length / 2 - 1;

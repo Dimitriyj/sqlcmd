@@ -39,16 +39,31 @@ public class MainController {
 
         while (true) {
             String input = view.read();
-            if (input == null) {
-                new Exit(view).process(input);
-            }
             for (Command command : commands) {
-                if (command.canProcess(input)) {
-                    command.process(input);
+                try {
+                    if (command.canProcess(input)) {
+                        command.process(input);
+                        break;
+                    }
+                } catch (Exception e) {
+                    if(e instanceof ExitExcept) {
+                        throw new ExitExcept();
+                    }
+                    printError(e);
                     break;
                 }
             }
             view.write("Enter the command (or help for reference):");
         }
+    }
+
+    private void printError(Exception e) {
+        String message = e.getMessage();
+        Throwable cause = e.getCause();
+        if (cause != null) {
+            message += " " + cause.getMessage();
+        }
+        view.write("failure due to reason: " + message);
+        view.write("Try again");
     }
 }
