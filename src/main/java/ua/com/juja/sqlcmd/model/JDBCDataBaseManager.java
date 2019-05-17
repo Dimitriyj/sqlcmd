@@ -24,13 +24,10 @@ public class JDBCDataBaseManager implements DataBaseManager {
     }
 
     private int getCommonSize(String sql) {
-        try {
-            Statement stmt = connection.createStatement();
-            ResultSet rsCount = stmt.executeQuery(sql);
+        try (Statement stmt = connection.createStatement(); ResultSet rsCount = stmt.executeQuery(sql)) {
             rsCount.next();
             int size = rsCount.getInt(1);
-            rsCount.close();
-            return  size;
+            return size;
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
@@ -60,21 +57,17 @@ public class JDBCDataBaseManager implements DataBaseManager {
 
     @Override
     public String[] getTableNames() {
-        try {
-            Statement stmt = connection.createStatement();
-            String sql = "SELECT table_name FROM information_schema.tables "
-                        + "WHERE table_schema = 'public' "
-                        + "AND table_type = 'BASE TABLE' "
-                        + "ORDER BY table_name"
-                        ;
-            ResultSet rs = stmt.executeQuery(sql);
+        String sql = "SELECT table_name FROM information_schema.tables "
+                + "WHERE table_schema = 'public' "
+                + "AND table_type = 'BASE TABLE' "
+                + "ORDER BY table_name"
+                ;
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             String[] tables = new String[getCountTables()];
             int index = 0;
             while (rs.next()) {
                 tables[index++] = rs.getString("table_name");
             }
-            rs.close();
-            stmt.close();
             return tables;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -84,20 +77,16 @@ public class JDBCDataBaseManager implements DataBaseManager {
 
     @Override
     public String[] getTableColumns(String tableName) {
-        try {
-            Statement stmt = connection.createStatement();
-            String sql = "SELECT * FROM information_schema.columns "
-                    + "WHERE table_schema= 'public' "
-                    + "AND table_name = '" + tableName + "'"
-                    ;
-            ResultSet rs = stmt.executeQuery(sql);
+        String sql = "SELECT * FROM information_schema.columns "
+                + "WHERE table_schema= 'public' "
+                + "AND table_name = '" + tableName + "'"
+                ;
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             String[] tables = new String[getCountColumn(tableName)];
             int index = 0;
             while (rs.next()) {
                 tables[index++] = rs.getString("column_name");
             }
-            rs.close();
-            stmt.close();
             return tables;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -107,14 +96,12 @@ public class JDBCDataBaseManager implements DataBaseManager {
 
     @Override
     public DataSet[] getTableData(String tableName) {
-        try {
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM public." + tableName);
+        int size = getCountRow(tableName);
+        DataSet[] tableData = new DataSet[size];
+        String sql = "SELECT * FROM public." + tableName;
+
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             ResultSetMetaData rsmd = rs.getMetaData();
-
-            int size = getCountRow(tableName);
-            DataSet[] tableData = new DataSet[size];
-
             int index = 0;
             while (rs.next()) {
                 DataSet dataSet = new DataSet(rsmd.getColumnCount());
@@ -123,8 +110,6 @@ public class JDBCDataBaseManager implements DataBaseManager {
                 }
                 tableData[index++] = dataSet;
             }
-            rs.close();
-            stmt.close();
             return tableData;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -140,6 +125,9 @@ public class JDBCDataBaseManager implements DataBaseManager {
             throw new RuntimeException("Please add jdbc jar to project", e);
         }
         try {
+            if (connection != null) {
+                connection.close();
+            }
             connection = DriverManager.getConnection(
                     "jdbc:postgresql://localhost:5432/" + database, userName, password);
         } catch (SQLException e) {
@@ -150,10 +138,8 @@ public class JDBCDataBaseManager implements DataBaseManager {
 
     @Override
     public void clear(String tableName) {
-        try {
-            Statement stmt = connection.createStatement();
+        try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate("DELETE FROM public." + tableName);
-            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -161,14 +147,12 @@ public class JDBCDataBaseManager implements DataBaseManager {
 
     @Override
     public void create(String tableName, DataSet input) {
-        try {
-            Statement stmt = connection.createStatement();
+        String columnNames = getNamesFormated(input, "%s,");
+        String columnValues = getValuesFormated(input, "'%s',");
+        String sql = "INSERT INTO public." + tableName + "(" + columnNames + ") VALUES(" + columnValues + ")";
 
-            String columnNames = getNamesFormated(input, "%s,");
-            String columnValues = getValuesFormated(input, "'%s',");
-
-            stmt.executeUpdate("INSERT INTO public." + tableName + "(" + columnNames + ") VALUES(" + columnValues + ")");
-            stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -176,18 +160,16 @@ public class JDBCDataBaseManager implements DataBaseManager {
 
     @Override
     public void update(String tableName, int id, DataSet dataSet) {
-        try {
-            String tableNames = getNamesFormated(dataSet, "%s = ?,");
-            PreparedStatement pstmt = connection.prepareStatement("UPDATE public." + tableName + " SET " + tableNames + " WHERE id = ?");
+        String tableNames = getNamesFormated(dataSet, "%s = ?,");
+        String sql = "UPDATE public." + tableName + " SET " + tableNames + " WHERE id = ?";
 
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             int index = 1;
             for (Object value : dataSet.getValues()) {
                 pstmt.setObject(index++, value);
             }
             pstmt.setInt(index, id);
-
             pstmt.executeUpdate();
-            pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
