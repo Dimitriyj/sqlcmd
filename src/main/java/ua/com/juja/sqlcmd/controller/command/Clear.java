@@ -23,7 +23,7 @@ public class Clear implements Command {
         String[] data = command.split("\\|");
         if (data.length != 2) {
             throw new IllegalArgumentException("Invalid number of parameters separated by sign '|', " +
-                    "expected 2, in stock: " + data.length);
+                    "expected 2, in stock: " + command);
         }
         manager.clear(data[1]);
         view.write(String.format("Table '%s' was successfully cleared", data[1]));

@@ -242,7 +242,7 @@ public class IntegrationTest {
                 "Connection successful!\r\n" +
                 "Enter the command (or help for reference):\r\n" +
                 // clear|abrakadabra|tadam
-                "failure due to reason: Invalid number of parameters separated by sign '|', expected 2, in stock: 3\r\n" +
+                "failure due to reason: Invalid number of parameters separated by sign '|', expected 2, in stock: clear|abrakadabra|tadam\r\n" +
                 "Try again\r\n" +
                 "Enter the command (or help for reference):\r\n" +
                 // exit
